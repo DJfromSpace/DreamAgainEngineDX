@@ -25,8 +25,8 @@ cmake_minimum_required(VERSION 3.23)
   target_sources(DreamAgainEngineDX
     PRIVATE
       ./editor/src/main.cpp
-      "runtime/core/App.h"
-      "runtime/core/App.cpp"
+      "runtime/core/DreamApp.h"
+      "runtime/core/DreamApp.cpp"
       "runtime/core/AppConfig.h"
       "runtime/io/DreamFileSystem.h"
       "runtime/io/DreamFileSystem.cpp"

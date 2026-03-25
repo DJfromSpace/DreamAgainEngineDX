@@ -1,5 +1,5 @@
-windowWidth = 1280;
-windowHeight = 720;
-fullscreen = 0;
-AppName = "DreamEngineDXRuntime2"
-WindowName = "DreamEngineDXApp;
+windowWidth = 1280
+windowHeight = 720
+fullscreen = 0
+AppName = "DreamEngineDXRuntime"
+WindowName = "DreamEngineDXApp"

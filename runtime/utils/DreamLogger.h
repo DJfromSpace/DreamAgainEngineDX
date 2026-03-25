@@ -15,14 +15,13 @@ enum class LogLvl{
 class DreamLogger
 {
 public:
-	DreamLogger();
-	~DreamLogger();
-
-	void Init();
-	void LogMessage(LogLvl lvl, const std::string& log, bool printToLog = true);
+	static bool Init();
+	static bool IsInitialized();
+	static void Shutdown();
+	static void LogMessage(LogLvl lvl, const std::string& log, bool printToLog = true);
 
 	template <typename... Args>
-	void Print(LogLvl lvl, const Args&... args)
+	static void Print(LogLvl lvl, const Args&... args)
 	{
 		std::ostringstream messageStream;
 		(messageStream << ... << args);
@@ -30,5 +29,6 @@ public:
 	}
 
 private:
-	std::ofstream outStream;
+	static std::ofstream outStream;
+	static bool initialized;
 };

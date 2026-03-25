@@ -8,5 +8,5 @@ public:
 	RuntimeConfig();
 	~RuntimeConfig();
 
-	AppConfig LoadConfig();
+	bool LoadConfig(AppConfig& appConfig);
 };

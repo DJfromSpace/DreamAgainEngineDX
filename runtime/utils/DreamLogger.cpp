@@ -1,28 +1,27 @@
 /* Author: DJfromSpace (Dillon E Jones) */
 
 #include "DreamLogger.h"
-#include "config.h"
 #include "../io/DreamFileSystem.h"
 
-DreamLogger::DreamLogger()
-{
-	Init();
-}
+std::ofstream DreamLogger::outStream;
+bool DreamLogger::initialized = false;
 
-DreamLogger::~DreamLogger()
+bool DreamLogger::Init()
 {
-	outStream.flush();
-	outStream.close();
-}
+	if (initialized)
+	{
+		return true;
+	}
 
-void DreamLogger::Init()
-{
 	std::cout << "Initiating DreamLogger..." << std::endl;
 
-	std::filesystem::path logDirectory = std::filesystem::path(DREAM_PROJECT_ROOT) / "Logs";
-	std::filesystem::path logPath = logDirectory / "LogFile.txt";
-
-	DreamFileSystem::CreateDirectories(logDirectory.string());
+	std::filesystem::path logPath = DreamFileSystem::GetLogDirPath() / "LogFile.txt";
+	if (!DreamFileSystem::PathExists(DreamFileSystem::GetLogDirPath().string()) &&
+		!DreamFileSystem::CreateDirectories(DreamFileSystem::GetLogDirPath().string()))
+	{
+		std::cout << "ERROR::DREAMLOGGER::The filesystem failed to create the log directory\n";
+		return false;
+	}
 
 	if (outStream.is_open())
 	{
@@ -30,10 +29,41 @@ void DreamLogger::Init()
 	}
 
 	outStream.open(logPath, std::ios::out | std::ios::app);
+	initialized = outStream.is_open();
+
+	if (!initialized)
+	{
+		std::cout << "ERROR::DREAMLOGGER::Failed to open the outstream\n";
+		return false;
+	}
+
+	return true;
+}
+
+bool DreamLogger::IsInitialized()
+{
+	return initialized;
+}
+
+void DreamLogger::Shutdown()
+{
+	if (outStream.is_open())
+	{
+		outStream.flush();
+		outStream.close();
+	}
+
+	initialized = false;
 }
 
 void DreamLogger::LogMessage(LogLvl lvl, const std::string& log, bool printToLog)
 {
+	if (!initialized && !Init())
+	{
+		std::cout << "ERROR::DREAMLOGGER::Logger is not initialized\n";
+		return;
+	}
+
 	if (outStream.is_open())
 	{
 		switch (lvl)

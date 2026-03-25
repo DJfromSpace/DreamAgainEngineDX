@@ -25,4 +25,8 @@ public:
 
 	static std::string GetWorkingDir();
 	static std::string GetAbsolutePath(const std::string& path);
+
+	static std::filesystem::path GetProjectDirPath();
+	static std::filesystem::path GetAppConfigPath();
+	static std::filesystem::path GetLogDirPath();
 };

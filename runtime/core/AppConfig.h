@@ -4,9 +4,9 @@
 #include <string>
 
 struct AppConfig {
-	int windowWidth;
-	int windowHeight;
-	bool fullscreen;
-	std::string AppName;
-	std::string WindowName;
+	int windowWidth = 1280;
+	int windowHeight = 720;
+	bool fullscreen = false;
+	std::string AppName = "DefaultAppName";
+	std::string WindowName = "DefaultWindowName";
 };

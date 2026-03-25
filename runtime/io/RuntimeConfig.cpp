@@ -1,9 +1,9 @@
 /* Author: DJfromSpace (Dillon E Jones) */
 #include "RuntimeConfig.h"
-#include "config.h"
 #include "DreamFileSystem.h"
 #include "../utils/DreamLogger.h"
 #include <fstream>
+#include <optional>
 
 namespace
 {
@@ -19,82 +19,168 @@ namespace
 		const std::size_t end = value.find_last_not_of(whitespace);
 		return value.substr(start, end - start + 1);
 	}
+
+	std::optional<int> TryParseInt(const std::string& value)
+	{
+		try
+		{
+			std::size_t parsedChars = 0;
+			const int parsedValue = std::stoi(value, &parsedChars);
+
+			if (parsedChars != value.size())
+			{
+				return std::nullopt;
+			}
+
+			return parsedValue;
+		}
+		catch (...)
+		{
+			return std::nullopt;
+		}
+	}
+
+	std::optional<bool> TryParseBool(const std::string& value)
+	{
+		if (value == "true" || value == "1")
+		{
+			return true;
+		}
+
+		if (value == "false" || value == "0")
+		{
+			return false;
+		}
+
+		return std::nullopt;
+	}
+
+	std::string NormalizeQuotedString(const std::string& value)
+	{
+		if (value.size() >= 2 && value.front() == '"' && value.back() == '"')
+		{
+			return value.substr(1, value.size() - 2);
+		}
+
+		return value;
+	}
 }
 
 RuntimeConfig::RuntimeConfig()
 {
-	LoadConfig();
 }
 
 RuntimeConfig::~RuntimeConfig()
 {
 }
 
-AppConfig RuntimeConfig::LoadConfig()
+bool RuntimeConfig::LoadConfig(AppConfig& appConfig)
 {
-	DreamLogger logger;
-	AppConfig appConfig;
-
-	std::filesystem::path configPath = std::filesystem::path(DREAM_PROJECT_ROOT) / "AppConfig.txt";
-
-	if (!DreamFileSystem::PathExists(configPath.string()))
+	if (!DreamFileSystem::PathExists(DreamFileSystem::GetAppConfigPath().string()))
 	{
-		logger.LogMessage(LogLvl::ERROR, "AppConfig.txt does not exist.");
-		return appConfig;
+		DreamLogger::LogMessage(LogLvl::ERROR, "AppConfig.txt does not exist. Using defaults.");
+		return false;
 	}
 
-	std::ifstream inStream(configPath);
+	std::ifstream inStream(DreamFileSystem::GetAppConfigPath());
 	if (!inStream.is_open())
 	{
-		logger.LogMessage(LogLvl::ERROR, "Failed to open AppConfig.txt");
-		return appConfig;
+		DreamLogger::LogMessage(LogLvl::ERROR, "Failed to open AppConfig.txt. Using defaults.");
+		return false;
 	}
 
 	std::string line;
+	int lineNumber = 0;
 	while (std::getline(inStream, line))
 	{
-		if (line.empty() || line.at(0) == '#')
+		++lineNumber;
+
+		const std::string trimmedLine = Trim(line);
+		if (trimmedLine.empty() || trimmedLine[0] == '#')
 		{
 			continue;
 		}
 
-		std::size_t equalPos = line.find('=');
+		const std::size_t equalPos = trimmedLine.find('=');
 		if (equalPos == std::string::npos)
 		{
-			logger.Print(LogLvl::WARNING, "Invlaid config line: ", line);
+			DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": invalid config line, missing '='. Using defaults for that line.");
 			continue;
 		}
 
-		std::string key = Trim(line.substr(0, equalPos));
-		std::string value = Trim(line.substr(equalPos + 1));
+		const std::string key = Trim(trimmedLine.substr(0, equalPos));
+		const std::string value = Trim(trimmedLine.substr(equalPos + 1));
+
+		if (key.empty())
+		{
+			DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": empty config key. Using defaults for that line.");
+			continue;
+		}
+
+		if (value.empty())
+		{
+			DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": empty value for key '", key, "'. Using default.");
+			continue;
+		}
 
 		if (key == "windowWidth")
 		{
-			appConfig.windowWidth = std::stoi(value);
+			const std::optional<int> parsedValue = TryParseInt(value);
+			if (!parsedValue || *parsedValue <= 0)
+			{
+				DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": invalid windowWidth value '", value, "'. Using default.");
+				continue;
+			}
+
+			appConfig.windowWidth = *parsedValue;
 		}
 		else if (key == "windowHeight")
 		{
-			appConfig.windowHeight = std::stoi(value);
+			const std::optional<int> parsedValue = TryParseInt(value);
+			if (!parsedValue || *parsedValue <= 0)
+			{
+				DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": invalid windowHeight value '", value, "'. Using default.");
+				continue;
+			}
+
+			appConfig.windowHeight = *parsedValue;
 		}
 		else if (key == "fullscreen")
 		{
-			appConfig.fullscreen = (value == "true" || value == "1");
+			const std::optional<bool> parsedValue = TryParseBool(value);
+			if (!parsedValue.has_value())
+			{
+				DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": invalid fullscreen value '", value, "'. Use true/false/1/0. Using default.");
+				continue;
+			}
+
+			appConfig.fullscreen = *parsedValue;
 		}
 		else if (key == "AppName")
 		{
-			appConfig.AppName = value;
+			if (value.size() < 2 || value.front() != '"' || value.back() != '"')
+			{
+				DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": AppName must be wrapped in quotes. Using default.");
+				continue;
+			}
+
+			appConfig.AppName = NormalizeQuotedString(value);
 		}
 		else if (key == "WindowName")
 		{
-			appConfig.WindowName = value;
+			if (value.size() < 2 || value.front() != '"' || value.back() != '"')
+			{
+				DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": WindowName must be wrapped in quotes. Using default.");
+				continue;
+			}
+
+			appConfig.WindowName = NormalizeQuotedString(value);
 		}
 		else
 		{
-			logger.Print(LogLvl::WARNING, "Unknown config key: ", key);
+			DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": unknown config key '", key, "'. Ignoring.");
 		}
-
-		logger.Print(LogLvl::INFO, "Key: ", key, " Value: ", value);
 	}
 
-	return appConfig;
+	return true;
 }

@@ -1,6 +1,7 @@
 /* Author: DJfromSpace (Dillon E Jones) */
 
 #include "DreamFileSystem.h"
+#include "config.h"
 
 bool DreamFileSystem::CreateDirectory(const std::string& pathName)
 {
@@ -97,5 +98,23 @@ std::string DreamFileSystem::GetWorkingDir()
 std::string DreamFileSystem::GetAbsolutePath(const std::string& pathName)
 {
 	return std::filesystem::absolute(pathName).string();
+}
+
+std::filesystem::path DreamFileSystem::GetProjectDirPath()
+{
+	std::filesystem::path projectDir = std::filesystem::path(DREAM_PROJECT_ROOT);
+	return projectDir;
+}
+
+std::filesystem::path DreamFileSystem::GetAppConfigPath()
+{
+	std::filesystem::path configPath = std::filesystem::path(DREAM_PROJECT_ROOT) / "AppConfig.txt";
+	return configPath;
+}
+
+std::filesystem::path DreamFileSystem::GetLogDirPath()
+{
+	std::filesystem::path logPath = std::filesystem::path(DREAM_PROJECT_ROOT) / "Logs";
+	return logPath;
 }
 
