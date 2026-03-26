@@ -105,3 +105,12 @@ void DreamLogger::LogMessage(LogLvl lvl, const std::string& log, bool printToLog
 		std::cout << "ERROR::DREAMLOGGER::Failed to open the outstream\n";
 	}
 }
+
+std::string DreamLogger::FormatFloat(double value, int precision)
+{
+	std::ostringstream stream;
+	stream.setf(std::ios::fixed, std::ios::floatfield);
+	stream.precision(precision);
+	stream << value;
+	return stream.str();
+}

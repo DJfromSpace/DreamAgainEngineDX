@@ -2,6 +2,7 @@
 #pragma once
 #include "../utils/DreamLogger.h"
 #include "AppConfig.h"
+#include "DreamTimer.h"
 
 class DreamApp
 {
@@ -10,9 +11,9 @@ public:
 	~DreamApp();
 
 	bool Init();
-
-	void TestFunc();
+	void Run();
 
 public:
 	AppConfig appConfig;
+	DreamTimer timer;
 };

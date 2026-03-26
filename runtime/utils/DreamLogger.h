@@ -19,6 +19,7 @@ public:
 	static bool IsInitialized();
 	static void Shutdown();
 	static void LogMessage(LogLvl lvl, const std::string& log, bool printToLog = true);
+	static std::string FormatFloat(double value, int precision = 4);
 
 	template <typename... Args>
 	static void Print(LogLvl lvl, const Args&... args)

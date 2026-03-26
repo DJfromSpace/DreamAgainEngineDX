@@ -28,8 +28,14 @@ cmake_minimum_required(VERSION 3.23)
       "runtime/core/DreamApp.h"
       "runtime/core/DreamApp.cpp"
       "runtime/core/AppConfig.h"
+      "runtime/core/DreamTimer.h"
+      "runtime/core/DreamTimer.cpp"
+      "runtime/debugtools/DreamDebugTools.h"
+      "runtime/debugtools/DreamDebugTools.cpp"
       "runtime/io/DreamFileSystem.h"
       "runtime/io/DreamFileSystem.cpp"
       "runtime/io/RuntimeConfig.h"
       "runtime/io/RuntimeConfig.cpp"
-   "runtime/utils/DreamLogger.h" "runtime/utils/DreamLogger.cpp")
+      "runtime/utils/DreamLogger.h"
+      "runtime/utils/DreamLogger.cpp"
+  )

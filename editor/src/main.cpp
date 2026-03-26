@@ -11,8 +11,7 @@ int main()
 	{
 		return -1;
 	}
-
-	app.TestFunc();
+	app.Run();
 
 	return 0;
 }

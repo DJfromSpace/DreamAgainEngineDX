@@ -1,5 +1,6 @@
 /* Author: DJfromSpace (Dillon E Jones) */
 #include "DreamApp.h"
+#include "../debugtools/DreamDebugTools.h"
 #include "../io/RuntimeConfig.h"
 #include "../io/DreamFileSystem.h"
 
@@ -21,30 +22,34 @@ bool DreamApp::Init()
 	return true;
 }
 
-void DreamApp::TestFunc()
+void DreamApp::Run()
 {
-	DreamLogger::LogMessage(LogLvl::INFO, "Hello TikTok/Youtube!");
-	DreamLogger::LogMessage(LogLvl::INFO, "Testing AppStartup");
+	float totalElaspedSeconds = 0.0f;
+	float timeSinceLastPrint = 0.0f;
+	float printIntervalSeconds = 1.0f;
+	float maxRunSeconds = 5.0f;
+	int framesSinceLastPrint = 0;
+	timer.Start();
 
-	std::string dir = DreamFileSystem::GetLogDirPath().string();
-	std::string file = DreamFileSystem::GetLogDirPath().string() + "/test.txt";
-	std::string copy = DreamFileSystem::GetLogDirPath().string() + "/test_copy.txt";
+	DreamLogger::LogMessage(LogLvl::INFO, "Starting Day 4 frame timing run.");
+	while (totalElaspedSeconds < maxRunSeconds)
+	{
+		timer.Tick();
+		float frameDelta = timer.GetDeltaTimeSeconds();
+		totalElaspedSeconds += frameDelta;
+		timeSinceLastPrint += frameDelta;
+		++framesSinceLastPrint;
 
-	DreamLogger::Print(LogLvl::INFO, "Creating Dirs: ", DreamFileSystem::CreateDirectories(dir));
-	DreamLogger::Print(LogLvl::INFO, "Creating Dir: ", DreamFileSystem::CreateDirectory(dir));
-	DreamLogger::Print(LogLvl::INFO, "Writing File: ", DreamFileSystem::WriteTextFile(file, "DreamFileSystem check success!"));
-	DreamLogger::Print(LogLvl::INFO, "Path Exists File: ", DreamFileSystem::PathExists(file));
-	DreamLogger::Print(LogLvl::INFO, "Path Exists Dir: ", DreamFileSystem::PathExists(dir));
-	DreamLogger::Print(LogLvl::INFO, "Is File: ", DreamFileSystem::IsFile(file));
-	DreamLogger::Print(LogLvl::INFO, "Read File: ", DreamFileSystem::ReadTextFile(file));
-	DreamLogger::Print(LogLvl::INFO, "Copy File: ", DreamFileSystem::CopyFile(file, copy, true));
-	DreamLogger::Print(LogLvl::INFO, "Working Dir: ", DreamFileSystem::GetWorkingDir());
-	DreamLogger::Print(LogLvl::INFO, "Project Root: ", DreamFileSystem::GetProjectDirPath().string());
+		if (timeSinceLastPrint >= printIntervalSeconds && framesSinceLastPrint > 0)
+		{
+			DreamDebugTools::LogTimingSummary(totalElaspedSeconds, timeSinceLastPrint, framesSinceLastPrint);
+			timeSinceLastPrint = 0.0f;
+			framesSinceLastPrint = 0;
+		}
+	}
 
-
-	DreamLogger::Print(LogLvl::INFO, "WindowName: ", appConfig.WindowName);
-	DreamLogger::Print(LogLvl::INFO, "AppName: ", appConfig.AppName);
-	DreamLogger::Print(LogLvl::INFO, "windowWidth: ", appConfig.windowWidth);
-	DreamLogger::Print(LogLvl::INFO, "windowHeight: ", appConfig.windowHeight);
-	DreamLogger::Print(LogLvl::INFO, "fullscreen: ", appConfig.fullscreen);
+	timer.Stop();
+	DreamLogger::Print(LogLvl::INFO, "Frame timing run complete after ", DreamLogger::FormatFloat(totalElaspedSeconds), " seconds.");
 }
+
+

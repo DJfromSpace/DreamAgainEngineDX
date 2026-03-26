@@ -114,7 +114,7 @@ std::filesystem::path DreamFileSystem::GetAppConfigPath()
 
 std::filesystem::path DreamFileSystem::GetLogDirPath()
 {
-	std::filesystem::path logPath = std::filesystem::path(DREAM_PROJECT_ROOT) / "Logs";
+	std::filesystem::path logPath = std::filesystem::path(DREAM_PROJECT_ROOT) / "DreamLogs";
 	return logPath;
 }
 
