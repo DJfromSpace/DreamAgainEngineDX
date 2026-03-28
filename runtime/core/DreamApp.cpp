@@ -1,6 +1,5 @@
 /* Author: DJfromSpace (Dillon E Jones) */
 #include "DreamApp.h"
-#include "../debugtools/DreamDebugTools.h"
 #include "../io/RuntimeConfig.h"
 #include "../io/DreamFileSystem.h"
 
@@ -19,37 +18,36 @@ bool DreamApp::Init()
 	RuntimeConfig rConfig;
 	if(!rConfig.LoadConfig(appConfig)) return false;
 
+	HINSTANCE instanceHandle = GetModuleHandleW(nullptr);
+	if (instanceHandle == nullptr)
+	{
+		DreamLogger::Get().LogMessage(LogLvl::ERR, "Failed to get the window module handle.");
+		return false;
+	}
+	if (!window.Create(instanceHandle, appConfig))
+	{
+		DreamLogger::Get().LogMessage(LogLvl::ERR, "Failed to create DreamWindow.");
+		return false;
+	}
+
+	window.Show();
+	DreamLogger::Get().LogMessage(LogLvl::INFO, "DreamApp Init Successful.");
 	return true;
 }
 
 void DreamApp::Run()
 {
-	float totalElaspedSeconds = 0.0f;
-	float timeSinceLastPrint = 0.0f;
-	float printIntervalSeconds = 1.0f;
-	float maxRunSeconds = 5.0f;
-	int framesSinceLastPrint = 0;
-	timer.Start();
+	DreamLogger::Get().LogMessage(LogLvl::INFO, "Starting DreamApp window loop.");
 
-	DreamLogger::Get().LogMessage(LogLvl::INFO, "Starting Day 4 frame timing run.");
-	while (totalElaspedSeconds < maxRunSeconds)
+	while (window.IsOpen())
 	{
-		timer.Tick();
-		float frameDelta = timer.GetDeltaTimeSeconds();
-		totalElaspedSeconds += frameDelta;
-		timeSinceLastPrint += frameDelta;
-		++framesSinceLastPrint;
-
-		if (timeSinceLastPrint >= printIntervalSeconds && framesSinceLastPrint > 0)
+		if (!window.PumpMessages())
 		{
-			DreamDebugTools::LogTimingSummary(totalElaspedSeconds, timeSinceLastPrint, framesSinceLastPrint);
-			timeSinceLastPrint = 0.0f;
-			framesSinceLastPrint = 0;
+			break;
 		}
 	}
 
-	timer.Stop();
-	DreamLogger::Get().Print(LogLvl::INFO, "Frame timing run complete after ", DreamLogger::Get().FormatFloat(totalElaspedSeconds), " seconds.");
+	DreamLogger::Get().LogMessage(LogLvl::INFO, "DreamApp Window loop ended.");
 }
 
 

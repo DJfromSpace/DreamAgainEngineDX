@@ -51,7 +51,7 @@ bool DreamLogger::Init()
 	return true;
 }
 
-const bool DreamLogger::IsInitialized() const
+bool DreamLogger::IsInitialized() const
 {
 	return initialized;
 }
@@ -100,7 +100,7 @@ void DreamLogger::LogMessage(LogLvl lvl, const std::string& log, bool printToLog
 			}
 			std::cout << "WARNING::" << log << "\n";
 			break;
-		case LogLvl::ERROR:
+		case LogLvl::ERR:
 			if (printToLog)
 			{
 				outStream << "ERROR::" << log << "\n";
@@ -117,7 +117,7 @@ void DreamLogger::LogMessage(LogLvl lvl, const std::string& log, bool printToLog
 	}
 }
 
-const std::string DreamLogger::FormatFloat(double value, int precision) const
+std::string DreamLogger::FormatFloat(double value, int precision) const
 {
 	std::ostringstream stream;
 	stream.setf(std::ios::fixed, std::ios::floatfield);

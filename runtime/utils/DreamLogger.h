@@ -10,7 +10,7 @@ enum class LogLvl
 	DEBUG = 0,
 	INFO = 1,
 	WARNING = 2,
-	ERROR = 3
+	ERR = 3
 };
 
 class DreamLogger
@@ -19,10 +19,10 @@ public:
 	static DreamLogger& Get(); // Singleton
 
 	bool Init();
-	const bool IsInitialized() const;
+	bool IsInitialized() const;
 	void Shutdown();
 	void LogMessage(LogLvl lvl, const std::string& log, bool printToLog = true);
-	const std::string FormatFloat(double value, int precision = 4) const;
+	std::string FormatFloat(double value, int precision = 4) const;
 
 	template <typename... Args>
 	void Print(LogLvl lvl, const Args&... args)

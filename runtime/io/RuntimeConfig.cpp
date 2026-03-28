@@ -78,14 +78,14 @@ bool RuntimeConfig::LoadConfig(AppConfig& appConfig)
 {
 	if (!DreamFileSystem::PathExists(DreamFileSystem::GetAppConfigPath().string()))
 	{
-		DreamLogger::Get().LogMessage(LogLvl::ERROR, "AppConfig.txt does not exist. Using defaults.");
+		DreamLogger::Get().LogMessage(LogLvl::ERR, "AppConfig.txt does not exist. Using defaults.");
 		return false;
 	}
 
 	std::ifstream inStream(DreamFileSystem::GetAppConfigPath());
 	if (!inStream.is_open())
 	{
-		DreamLogger::Get().LogMessage(LogLvl::ERROR, "Failed to open AppConfig.txt. Using defaults.");
+		DreamLogger::Get().LogMessage(LogLvl::ERR, "Failed to open AppConfig.txt. Using defaults.");
 		return false;
 	}
 
