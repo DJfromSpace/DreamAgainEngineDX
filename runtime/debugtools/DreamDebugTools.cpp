@@ -12,7 +12,7 @@ void DreamDebugTools::LogTimingSummary(float totalElapsedSeconds, float interval
 	const float averageFrameTimeMs = (intervalElapsedSeconds / static_cast<float>(framesSinceLastPrint)) * 1000.0f;
 	const float averageFps = static_cast<float>(framesSinceLastPrint) / intervalElapsedSeconds;
 
-	DreamLogger::Print(LogLvl::INFO, "Elapsed (s): ", DreamLogger::FormatFloat(totalElapsedSeconds));
-	DreamLogger::Print(LogLvl::INFO, "Average Frame Time (ms): ", DreamLogger::FormatFloat(averageFrameTimeMs));
-	DreamLogger::Print(LogLvl::INFO, "Average FPS: ", DreamLogger::FormatFloat(averageFps));
+	DreamLogger::Get().Print(LogLvl::INFO, "Elapsed (s): ", DreamLogger::Get().FormatFloat(totalElapsedSeconds));
+	DreamLogger::Get().Print(LogLvl::INFO, "Average Frame Time (ms): ", DreamLogger::Get().FormatFloat(averageFrameTimeMs));
+	DreamLogger::Get().Print(LogLvl::INFO, "Average FPS: ", DreamLogger::Get().FormatFloat(averageFps));
 }

@@ -14,7 +14,7 @@ DreamApp::~DreamApp()
 
 bool DreamApp::Init()
 {
-	if (!DreamLogger::Init()) return false;
+	if (!DreamLogger::Get().Init()) return false;
 
 	RuntimeConfig rConfig;
 	if(!rConfig.LoadConfig(appConfig)) return false;
@@ -31,7 +31,7 @@ void DreamApp::Run()
 	int framesSinceLastPrint = 0;
 	timer.Start();
 
-	DreamLogger::LogMessage(LogLvl::INFO, "Starting Day 4 frame timing run.");
+	DreamLogger::Get().LogMessage(LogLvl::INFO, "Starting Day 4 frame timing run.");
 	while (totalElaspedSeconds < maxRunSeconds)
 	{
 		timer.Tick();
@@ -49,7 +49,7 @@ void DreamApp::Run()
 	}
 
 	timer.Stop();
-	DreamLogger::Print(LogLvl::INFO, "Frame timing run complete after ", DreamLogger::FormatFloat(totalElaspedSeconds), " seconds.");
+	DreamLogger::Get().Print(LogLvl::INFO, "Frame timing run complete after ", DreamLogger::Get().FormatFloat(totalElaspedSeconds), " seconds.");
 }
 
 

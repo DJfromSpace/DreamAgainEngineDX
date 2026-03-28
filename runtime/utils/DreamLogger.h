@@ -5,7 +5,8 @@
 #include <fstream>
 #include <sstream>
 
-enum class LogLvl{
+enum class LogLvl
+{
 	DEBUG = 0,
 	INFO = 1,
 	WARNING = 2,
@@ -15,14 +16,16 @@ enum class LogLvl{
 class DreamLogger
 {
 public:
-	static bool Init();
-	static bool IsInitialized();
-	static void Shutdown();
-	static void LogMessage(LogLvl lvl, const std::string& log, bool printToLog = true);
-	static std::string FormatFloat(double value, int precision = 4);
+	static DreamLogger& Get(); // Singleton
+
+	bool Init();
+	const bool IsInitialized() const;
+	void Shutdown();
+	void LogMessage(LogLvl lvl, const std::string& log, bool printToLog = true);
+	const std::string FormatFloat(double value, int precision = 4) const;
 
 	template <typename... Args>
-	static void Print(LogLvl lvl, const Args&... args)
+	void Print(LogLvl lvl, const Args&... args)
 	{
 		std::ostringstream messageStream;
 		(messageStream << ... << args);
@@ -30,6 +33,13 @@ public:
 	}
 
 private:
-	static std::ofstream outStream;
-	static bool initialized;
+	DreamLogger();
+	~DreamLogger();
+
+	DreamLogger(const DreamLogger&) = delete;
+	DreamLogger& operator=(const DreamLogger&) = delete;
+
+private:
+	std::ofstream outStream;
+	bool initialized;
 };

@@ -78,14 +78,14 @@ bool RuntimeConfig::LoadConfig(AppConfig& appConfig)
 {
 	if (!DreamFileSystem::PathExists(DreamFileSystem::GetAppConfigPath().string()))
 	{
-		DreamLogger::LogMessage(LogLvl::ERROR, "AppConfig.txt does not exist. Using defaults.");
+		DreamLogger::Get().LogMessage(LogLvl::ERROR, "AppConfig.txt does not exist. Using defaults.");
 		return false;
 	}
 
 	std::ifstream inStream(DreamFileSystem::GetAppConfigPath());
 	if (!inStream.is_open())
 	{
-		DreamLogger::LogMessage(LogLvl::ERROR, "Failed to open AppConfig.txt. Using defaults.");
+		DreamLogger::Get().LogMessage(LogLvl::ERROR, "Failed to open AppConfig.txt. Using defaults.");
 		return false;
 	}
 
@@ -104,7 +104,7 @@ bool RuntimeConfig::LoadConfig(AppConfig& appConfig)
 		const std::size_t equalPos = trimmedLine.find('=');
 		if (equalPos == std::string::npos)
 		{
-			DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": invalid config line, missing '='. Using defaults for that line.");
+			DreamLogger::Get().Print(LogLvl::WARNING, "Line ", lineNumber, ": invalid config line, missing '='. Using defaults for that line.");
 			continue;
 		}
 
@@ -113,13 +113,13 @@ bool RuntimeConfig::LoadConfig(AppConfig& appConfig)
 
 		if (key.empty())
 		{
-			DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": empty config key. Using defaults for that line.");
+			DreamLogger::Get().Print(LogLvl::WARNING, "Line ", lineNumber, ": empty config key. Using defaults for that line.");
 			continue;
 		}
 
 		if (value.empty())
 		{
-			DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": empty value for key '", key, "'. Using default.");
+			DreamLogger::Get().Print(LogLvl::WARNING, "Line ", lineNumber, ": empty value for key '", key, "'. Using default.");
 			continue;
 		}
 
@@ -128,7 +128,7 @@ bool RuntimeConfig::LoadConfig(AppConfig& appConfig)
 			const std::optional<int> parsedValue = TryParseInt(value);
 			if (!parsedValue || *parsedValue <= 0)
 			{
-				DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": invalid windowWidth value '", value, "'. Using default.");
+				DreamLogger::Get().Print(LogLvl::WARNING, "Line ", lineNumber, ": invalid windowWidth value '", value, "'. Using default.");
 				continue;
 			}
 
@@ -139,7 +139,7 @@ bool RuntimeConfig::LoadConfig(AppConfig& appConfig)
 			const std::optional<int> parsedValue = TryParseInt(value);
 			if (!parsedValue || *parsedValue <= 0)
 			{
-				DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": invalid windowHeight value '", value, "'. Using default.");
+				DreamLogger::Get().Print(LogLvl::WARNING, "Line ", lineNumber, ": invalid windowHeight value '", value, "'. Using default.");
 				continue;
 			}
 
@@ -150,7 +150,7 @@ bool RuntimeConfig::LoadConfig(AppConfig& appConfig)
 			const std::optional<bool> parsedValue = TryParseBool(value);
 			if (!parsedValue.has_value())
 			{
-				DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": invalid fullscreen value '", value, "'. Use true/false/1/0. Using default.");
+				DreamLogger::Get().Print(LogLvl::WARNING, "Line ", lineNumber, ": invalid fullscreen value '", value, "'. Use true/false/1/0. Using default.");
 				continue;
 			}
 
@@ -160,7 +160,7 @@ bool RuntimeConfig::LoadConfig(AppConfig& appConfig)
 		{
 			if (value.size() < 2 || value.front() != '"' || value.back() != '"')
 			{
-				DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": AppName must be wrapped in quotes. Using default.");
+				DreamLogger::Get().Print(LogLvl::WARNING, "Line ", lineNumber, ": AppName must be wrapped in quotes. Using default.");
 				continue;
 			}
 
@@ -170,7 +170,7 @@ bool RuntimeConfig::LoadConfig(AppConfig& appConfig)
 		{
 			if (value.size() < 2 || value.front() != '"' || value.back() != '"')
 			{
-				DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": WindowName must be wrapped in quotes. Using default.");
+				DreamLogger::Get().Print(LogLvl::WARNING, "Line ", lineNumber, ": WindowName must be wrapped in quotes. Using default.");
 				continue;
 			}
 
@@ -178,7 +178,7 @@ bool RuntimeConfig::LoadConfig(AppConfig& appConfig)
 		}
 		else
 		{
-			DreamLogger::Print(LogLvl::WARNING, "Line ", lineNumber, ": unknown config key '", key, "'. Ignoring.");
+			DreamLogger::Get().Print(LogLvl::WARNING, "Line ", lineNumber, ": unknown config key '", key, "'. Ignoring.");
 		}
 	}
 

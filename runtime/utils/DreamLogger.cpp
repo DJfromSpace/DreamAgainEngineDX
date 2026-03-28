@@ -3,8 +3,19 @@
 #include "DreamLogger.h"
 #include "../io/DreamFileSystem.h"
 
-std::ofstream DreamLogger::outStream;
-bool DreamLogger::initialized = false;
+DreamLogger::DreamLogger(): initialized(false)
+{ }
+
+DreamLogger::~DreamLogger()
+{
+	Shutdown();
+}
+
+DreamLogger& DreamLogger::Get()
+{
+	static DreamLogger logger;
+	return logger;
+}
 
 bool DreamLogger::Init()
 {
@@ -40,7 +51,7 @@ bool DreamLogger::Init()
 	return true;
 }
 
-bool DreamLogger::IsInitialized()
+const bool DreamLogger::IsInitialized() const
 {
 	return initialized;
 }
@@ -106,7 +117,7 @@ void DreamLogger::LogMessage(LogLvl lvl, const std::string& log, bool printToLog
 	}
 }
 
-std::string DreamLogger::FormatFloat(double value, int precision)
+const std::string DreamLogger::FormatFloat(double value, int precision) const
 {
 	std::ostringstream stream;
 	stream.setf(std::ios::fixed, std::ios::floatfield);
